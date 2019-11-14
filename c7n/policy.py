@@ -445,12 +445,15 @@ class LambdaMode(ServerlessExecutionMode):
             super(LambdaMode, self).get_metrics(start, end, period))
         return values
 
+    # If a certain option is set, get the member ID from something deeper in the event, or maybe even an env var?
     def get_member_account_id(self, event):
         return event.get('account')
 
     def get_member_region(self, event):
         return event.get('region')
 
+    # Add some logic here to parse a specified account from a custom eventt
+    # Maybe, if a config option is set, grab account ID
     def assume_member(self, event):
         # if a member role is defined we're being run out of the master, and we need
         # to assume back into the member for policy execution.

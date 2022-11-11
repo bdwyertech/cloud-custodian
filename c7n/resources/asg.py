@@ -1539,7 +1539,8 @@ class Suspend(Action):
         except ClientError as e:
             if e.response['Error']['Code'] in (
                     'InvalidInstanceID.NotFound',
-                    'IncorrectInstanceState'):
+                    'IncorrectInstanceState',
+                    'UnsupportedOperation',):
                 self.log.warning("Erroring stopping asg instances %s %s" % (
                     asg['AutoScalingGroupName'], e))
                 return

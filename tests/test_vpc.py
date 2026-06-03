@@ -3871,6 +3871,27 @@ class EndpointTest(BaseTest):
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources[0]["c7n:matched-security-groups"], ["sg-6c7fa917"])
 
+    def test_endpoint_delete_action(self):
+        mock_factory = MagicMock()
+        mock_factory.region = 'us-east-1'
+        p = self.load_policy(
+            {
+                "name": "endpoint-delete",
+                "resource": "vpc-endpoint",
+                "actions": ["delete"],
+            },
+            session_factory=mock_factory,
+        )
+        self.assertEqual(
+            p.resource_manager.actions[0].get_permissions(),
+            ("ec2:DeleteVpcEndpoints",))
+        p.resource_manager.actions[0].process([
+            {'VpcEndpointId': 'vpce-123'},
+            {'VpcEndpointId': 'vpce-456'},
+        ])
+        mock_factory().client('ec2').delete_vpc_endpoints.assert_called_once_with(
+            VpcEndpointIds=['vpce-123', 'vpce-456'])
+
     def test_endpoint_cross_account(self):
         session_factory = self.replay_flight_data('test_vpce_cross_account')
         p = self.load_policy(
